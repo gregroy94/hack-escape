@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Tricheurs">
+<meta name="theme-color" content="#0a0a0f">
+<link rel="manifest" href="manifest.json">
+<title>Tricheurs</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0a0f;--surface:#12121a;--surface2:#1c1c28;--border:#2a2a3d;--accent:#ff3b5c;--accent2:#ffcc00;--text:#e8e8f0;--muted:#555570;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100dvh;display:flex;flex-direction:column;align-items:center;overflow-y:auto;}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:0;}
+.screen{display:none;flex-direction:column;align-items:center;justify-content:flex-start;min-height:100dvh;width:100%;padding:48px 24px 40px;position:relative;z-index:1;}
+.screen.active{display:flex;}
+.game-title{font-family:'Bebas Neue',sans-serif;font-size:72px;letter-spacing:6px;background:linear-gradient(135deg,#fff 40%,var(--accent) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;margin-bottom:8px;text-align:center;}
+.game-sub{color:var(--muted);font-size:12px;letter-spacing:4px;text-transform:uppercase;margin-bottom:48px;}
+.welcome-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:32px 28px;width:100%;max-width:380px;text-align:center;}
+.welcome-card h2{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px;margin-bottom:8px;}
+.welcome-card p{color:var(--muted);font-size:14px;margin-bottom:24px;}
+.name-input{width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:16px 20px;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:18px;text-align:center;outline:none;transition:border-color 0.2s;margin-bottom:16px;}
+.name-input:focus{border-color:var(--accent);}
+.name-input::placeholder{color:var(--muted);}
+.join-btn{width:100%;background:var(--accent);color:#fff;border:none;padding:16px;border-radius:12px;font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:2px;cursor:pointer;}
+.join-btn:active{transform:scale(0.98);}
+.player-header{width:100%;max-width:420px;display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;}
+.player-name-tag{font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);}
+.player-name-val{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:2px;}
+.conn-dot{width:8px;height:8px;border-radius:50%;background:var(--muted);transition:background 0.3s;}
+.conn-dot.on{background:#22c55e;box-shadow:0 0 8px rgba(34,197,94,0.5);}
+.action-grid{display:flex;flex-direction:column;gap:12px;width:100%;max-width:420px;}
+.action-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:20px 24px;display:flex;align-items:center;gap:16px;cursor:pointer;transition:all 0.2s;user-select:none;}
+.action-card:active{transform:scale(0.98);}
+.action-card .icon{font-size:28px;flex-shrink:0;}
+.action-card .info{flex:1;}
+.action-card .info .title{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:1px;}
+.action-card .info .desc{font-size:12px;color:var(--muted);margin-top:2px;}
+.action-card .arrow{color:var(--muted);font-size:18px;}
+.action-card.code-card{border-color:rgba(255,204,0,0.3);}.action-card.code-card .title{color:var(--accent2);}
+.action-card.role-card{border-color:rgba(167,139,250,0.3);}.action-card.role-card .title{color:#a78bfa;}
+.action-card.vote-card{border-color:rgba(99,179,237,0.3);}.action-card.vote-card .title{color:#63b3ed;}
+.action-card.results-card{border-color:rgba(34,197,94,0.3);}.action-card.results-card .title{color:#22c55e;}
+.action-card.disabled{opacity:0.35;cursor:not-allowed;pointer-events:none;}
+.badge-open{background:rgba(34,197,94,0.15);color:#22c55e;font-size:11px;letter-spacing:2px;padding:3px 8px;border-radius:99px;text-transform:uppercase;display:inline-block;margin-top:4px;}
+.badge-closed{background:rgba(85,85,112,0.2);color:var(--muted);font-size:11px;letter-spacing:2px;padding:3px 8px;border-radius:99px;text-transform:uppercase;display:inline-block;margin-top:4px;}
+.badge-done{background:rgba(255,204,0,0.15);color:var(--accent2);font-size:11px;letter-spacing:2px;padding:3px 8px;border-radius:99px;text-transform:uppercase;display:inline-block;margin-top:4px;}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:200;backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:24px;}
+.overlay.open{display:flex;}
+.code-box{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:40px 32px;text-align:center;width:100%;max-width:360px;}
+.code-box h3{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px;margin-bottom:8px;}
+.code-box p{color:var(--muted);font-size:13px;margin-bottom:24px;}
+.code-box input{width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:16px 20px;border-radius:12px;font-size:24px;text-align:center;letter-spacing:8px;outline:none;margin-bottom:16px;text-transform:uppercase;}
+.code-box input:focus{border-color:var(--accent2);}
+.btn-reveal{width:100%;background:var(--accent2);color:#0a0a0f;border:none;padding:14px;border-radius:12px;font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;cursor:pointer;margin-bottom:10px;}
+.btn-cancel-generic{width:100%;background:transparent;color:var(--muted);border:1px solid var(--border);padding:12px;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:15px;cursor:pointer;}
+.error-msg{color:var(--accent);font-size:13px;margin-bottom:12px;min-height:20px;}
+.mission-box{background:var(--surface);border:2px solid;border-radius:24px;padding:48px 32px 40px;text-align:center;width:100%;max-width:400px;}
+.mission-label{font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--muted);margin-bottom:16px;}
+.mission-role{font-family:'Bebas Neue',sans-serif;font-size:64px;letter-spacing:4px;line-height:1;margin-bottom:20px;}
+.mission-text{font-size:18px;line-height:1.7;margin-bottom:32px;}
+.mission-close{width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:14px;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:16px;cursor:pointer;}
+.role-draw-box{background:var(--surface);border:2px solid var(--border);border-radius:24px;padding:48px 32px 40px;text-align:center;width:100%;max-width:420px;transition:border-color 0.5s,box-shadow 0.5s;}
+.spinning-role{font-family:'Bebas Neue',sans-serif;font-size:52px;letter-spacing:3px;opacity:0.7;}
+.my-role-name{font-family:'Bebas Neue',sans-serif;font-size:64px;letter-spacing:4px;line-height:1;margin:16px 0;}
+.my-role-text{font-size:16px;line-height:1.7;color:#aaa;margin-bottom:24px;}
+.btn-draw-role{width:100%;background:#a78bfa;color:#0a0a0f;border:none;padding:16px;border-radius:12px;font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:2px;cursor:pointer;margin-bottom:12px;}
+.btn-draw-role:active{transform:scale(0.98);}
+.btn-close-role{width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:14px;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:16px;cursor:pointer;}
+.vote-panel{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:28px 24px;width:100%;max-width:480px;max-height:85dvh;overflow-y:auto;}
+.vote-panel h3{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px;color:#63b3ed;margin-bottom:16px;}
+.vote-names-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
+.vote-name-btn{background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:18px 12px;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:15px;cursor:pointer;transition:all 0.2s;text-align:center;}
+.vote-name-btn:hover{border-color:#63b3ed;background:rgba(99,179,237,0.08);}
+.vote-name-btn.selected{border-color:#63b3ed;background:rgba(99,179,237,0.15);color:#63b3ed;}
+.btn-confirm-vote{width:100%;background:#63b3ed;color:#0a0a0f;border:none;padding:14px;border-radius:12px;font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;cursor:pointer;margin-bottom:10px;}
+.btn-confirm-vote:disabled{opacity:0.4;cursor:not-allowed;}
+.voted-already{text-align:center;padding:24px 0;}
+.voted-already .icon{font-size:48px;margin-bottom:12px;}
+.voted-already h4{font-family:'Bebas Neue',sans-serif;font-size:32px;color:#22c55e;letter-spacing:2px;margin-bottom:8px;}
+.voted-already p{color:var(--muted);font-size:14px;}
+.vote-confirmed{background:var(--surface);border:1px solid #22c55e;border-radius:20px;padding:40px 28px;text-align:center;max-width:360px;width:100%;box-shadow:0 0 50px rgba(34,197,94,0.15);}
+.vote-confirmed .icon{font-size:48px;margin-bottom:12px;}
+.vote-confirmed h3{font-family:'Bebas Neue',sans-serif;font-size:36px;color:#22c55e;letter-spacing:2px;margin-bottom:8px;}
+.vote-confirmed p{color:var(--muted);font-size:14px;margin-bottom:24px;}
+.vote-confirmed button{width:100%;background:#22c55e;color:#0a0a0f;border:none;padding:14px;border-radius:12px;font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;cursor:pointer;}
+.results-panel{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:28px 24px;width:100%;max-width:480px;max-height:85dvh;overflow-y:auto;}
+.results-panel h3{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px;color:#a78bfa;margin-bottom:20px;}
+.result-row{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:var(--surface2);border-radius:10px;margin-bottom:8px;border:1px solid var(--border);}
+.result-name{font-size:15px;font-weight:500;}
+.result-votes{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:2px;color:#a78bfa;}
+.result-bar-wrap{flex:1;height:5px;background:var(--border);border-radius:99px;margin:0 12px;overflow:hidden;}
+.result-bar{height:100%;background:#a78bfa;border-radius:99px;}
+.btn-close-panel{width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:14px;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:16px;cursor:pointer;margin-top:16px;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+.pulsing{animation:pulse 1.5s infinite;}
+</style>
+</head>
+<body>
+
+<div class="screen active" id="screenWelcome">
+  <div class="game-title">TRICHEURS</div>
+  <p class="game-sub">Interface joueur</p>
+  <div class="welcome-card">
+    <h2>Rejoindre</h2>
+    <p>Entre ton prénom pour accéder au jeu</p>
+    <input class="name-input" id="nameInput" placeholder="Ton prénom…" autocomplete="off" autocapitalize="words">
+    <div class="error-msg" id="nameError"></div>
+    <button class="join-btn" onclick="joinGame()">Entrer →</button>
+  </div>
+</div>
+
+<div class="screen" id="screenMain">
+  <div class="player-header">
+    <div>
+      <div class="player-name-tag">Connecté en tant que</div>
+      <div class="player-name-val" id="displayName">—</div>
+    </div>
+    <div class="conn-dot" id="connDot"></div>
+  </div>
+  <div class="action-grid">
+    <div class="action-card code-card" onclick="openCodeModal()">
+      <div class="icon">🕵️</div>
+      <div class="info"><div class="title">Code secret</div><div class="desc">Révéler ta mission</div></div>
+      <div class="arrow">›</div>
+    </div>
+    <div class="action-card role-card disabled" id="roleCard" onclick="openRolePanel()">
+      <div class="icon">🎭</div>
+      <div class="info"><div class="title">Mon rôle</div><div class="desc"><span id="roleBadge" class="badge-closed">Fermé</span></div></div>
+      <div class="arrow">›</div>
+    </div>
+    <div class="action-card vote-card disabled" id="voteCard" onclick="openVotePanel()">
+      <div class="icon">🗳️</div>
+      <div class="info"><div class="title">Voter</div><div class="desc"><span id="voteBadge" class="badge-closed">Fermé</span></div></div>
+      <div class="arrow">›</div>
+    </div>
+    <div class="action-card results-card disabled" id="resultsCard" onclick="openResultsPanel()">
+      <div class="icon">📊</div>
+      <div class="info"><div class="title">Résultats</div><div class="desc"><span id="resultsBadge" class="badge-closed">Non disponibles</span></div></div>
+      <div class="arrow">›</div>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="overlayCode">
+  <div class="code-box">
+    <h3>Code Secret</h3>
+    <p>Entre ton code pour révéler ta mission</p>
+    <input type="text" id="codeSecretInput" placeholder="TON CODE" maxlength="20" autocomplete="off">
+    <div class="error-msg" id="codeSecretError"></div>
+    <button class="btn-reveal" onclick="revealMission()">Révéler</button>
+    <button class="btn-cancel-generic" onclick="closeOverlay('overlayCode')">Annuler</button>
+  </div>
+</div>
+
+<div class="overlay" id="overlayMission">
+  <div class="mission-box" id="missionBox">
+    <div class="mission-label">Ta mission</div>
+    <div class="mission-role" id="missionRole"></div>
+    <div class="mission-text" id="missionText"></div>
+    <button class="mission-close" onclick="closeOverlay('overlayMission')">✕ Fermer</button>
+  </div>
+</div>
+
+<div class="overlay" id="overlayRole">
+  <div class="role-draw-box" id="roleDrawBox">
+    <div id="roleDrawContent"></div>
+  </div>
+</div>
+
+<div class="overlay" id="overlayVote">
+  <div class="vote-panel">
+    <h3>🗳 Voter</h3>
+    <div id="voteContent"></div>
+    <button class="btn-cancel-generic" style="margin-top:8px;" onclick="closeOverlay('overlayVote')">Fermer</button>
+  </div>
+</div>
+
+<div class="overlay" id="overlayVoteConfirmed">
+  <div class="vote-confirmed">
+    <div class="icon">✅</div>
+    <h3>VOTÉ !</h3>
+    <p id="voteConfirmedText">Ton vote a bien été enregistré.</p>
+    <button onclick="closeOverlay('overlayVoteConfirmed')">Fermer</button>
+  </div>
+</div>
+
+<div class="overlay" id="overlayResults">
+  <div class="results-panel">
+    <h3>📊 Résultats</h3>
+    <div id="resultsContent"></div>
+    <button class="btn-close-panel" onclick="closeOverlay('overlayResults')">Fermer</button>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getDatabase, ref, set, onValue, runTransaction, onDisconnect, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDl-gClhDt-alcvb5Hnye6VPh6DmSKXcZk",
+  authDomain: "tricheurs.firebaseapp.com",
+  databaseURL: "https://tricheurs-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "tricheurs",
+  storageBucket: "tricheurs.firebasestorage.app",
+  messagingSenderId: "72697511304",
+  appId: "1:72697511304:web:4aa71470683937c4dace3d"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+const fbRef = p => ref(db, p);
+const fbSet = (p,v) => set(fbRef(p), v);
+const fbWatch = (p,cb) => onValue(fbRef(p), s => cb(s.exists()?s.val():null));
+
+let myName = "";
+let hasVoted = false;
+let myRoleDrawn = false;
+let selectedVote = null;
+let currentPhase = 'inscription';
+let rolesPool = [];
+let secretCodes = {};
+let registeredPlayers = {};
+let votes = {};
+let currentRoundId = null;
+let presenceSetup = false;
+
+// ── Persistence ───────────────────────────────────────────
+function saveSession() {
+  localStorage.setItem('tricheurs_session', JSON.stringify({
+    name: myName,
+    hasVoted,
+    myRoleDrawn,
+    roundId: currentRoundId
+  }));
+}
+
+function loadSession() {
+  try {
+    const data = localStorage.getItem('tricheurs_session');
+    return data ? JSON.parse(data) : null;
+  } catch(e) {
+    return null;
+  }
+}
+
+function clearSession() {
+  localStorage.removeItem('tricheurs_session');
+}
+// ── Presence: marquer en ligne / hors ligne automatiquement
+async function setupPresence(name) {
+  if(presenceSetup) return;
+  presenceSetup = true;
+
+  const playerRef = fbRef(`game/players/${name}`);
+  const connectedRef = fbRef('.info/connected');
+
+  onValue(connectedRef, async snap => {
+    if(!snap.val()) return;
+
+    // Lire les données existantes du joueur
+    const existingSnap = await new Promise(r => onValue(playerRef, r, {onlyOnce:true}));
+    const existing = existingSnap.exists() ? existingSnap.val() : {};
+
+    // Écrire en ligne avec onDisconnect pour passer hors ligne automatiquement
+    await onDisconnect(playerRef).update({ online: false });
+    await set(playerRef, { ...existing, online: true, name });
+  });
+}
+
+// ── Watch round ID ────────────────────────────────────────
+fbWatch('game/roundId', val => {
+  if(!val) return;
+  if(currentRoundId && val !== currentRoundId) {
+    clearSession();
+    presenceSetup = false;
+    location.reload();
+  }
+  currentRoundId = val;
+});
+
+// ── Auto-login ────────────────────────────────────────────
+window.addEventListener('load', async () => {
+  // 1. Récupérer le round actuel
+  const roundSnap = await get(fbRef('game/roundId'));
+  currentRoundId = roundSnap.exists() ? roundSnap.val() : null;
+
+  // 2. Charger la session locale
+  const session = loadSession();
+
+  if (session && session.name && session.roundId === currentRoundId) {
+    myName = session.name;
+    hasVoted = session.hasVoted || false;
+    myRoleDrawn = session.myRoleDrawn || false;
+    document.getElementById('displayName').textContent = myName;
+    showScreen('screenMain');
+
+    // 3. Vérifier immédiatement si le rôle est déjà tiré dans Firebase
+    const playerSnap = await get(fbRef(`game/players/${myName}`));
+    if (playerSnap.exists() && playerSnap.val().role) {
+      myRoleDrawn = true;
+      saveSession();           // met à jour la session locale
+      updateCards();           // rafraîchit les badges
+    }
+
+    await setupPresence(myName);
+  }
+});
+// ── Firebase watchers ─────────────────────────────────────
+fbWatch('.info/connected', v => {
+  document.getElementById('connDot').className = 'conn-dot'+(v?' on':'');
+});
+fbWatch('game/phase', val => {
+  currentPhase = val || 'inscription';
+  updateCards();
+  if(currentPhase === 'results') renderResults();
+  if(currentPhase !== 'results' && document.getElementById('overlayResults').classList.contains('open')) closeOverlay('overlayResults');
+});
+fbWatch('game/config', val => {
+  if(!val) return;
+  rolesPool = val.rolesPool || [];
+  secretCodes = val.secretCodes || {};
+});
+fbWatch('game/players', val => {
+  registeredPlayers = val || {};
+  // Sync myRoleDrawn from Firebase (in case rejoining)
+  if(myName && registeredPlayers[myName] && registeredPlayers[myName].role) {
+    myRoleDrawn = true;
+    saveSession();
+    updateCards();
+  }
+});
+fbWatch('game/votes', val => { votes = val || {}; });
+
+// ── Update card states ────────────────────────────────────
+function updateCards() {
+  const roleCard = document.getElementById('roleCard');
+  const roleBadge = document.getElementById('roleBadge');
+  if(myRoleDrawn) {
+    roleCard.classList.remove('disabled');
+    roleBadge.className='badge-done'; roleBadge.textContent='Rôle attribué ✓';
+  } else if(currentPhase === 'roles') {
+    roleCard.classList.remove('disabled');
+    roleBadge.className='badge-open'; roleBadge.textContent='Ouvert';
+  } else {
+    roleCard.classList.add('disabled');
+    roleBadge.className='badge-closed'; roleBadge.textContent='Fermé';
+  }
+
+  const voteCard = document.getElementById('voteCard');
+  const voteBadge = document.getElementById('voteBadge');
+  if(currentPhase === 'votes') {
+    voteCard.classList.remove('disabled');
+    if(hasVoted){ voteBadge.className='badge-done'; voteBadge.textContent='Voté ✓'; }
+    else { voteBadge.className='badge-open'; voteBadge.textContent='Ouvert'; }
+  } else { voteCard.classList.add('disabled'); voteBadge.className='badge-closed'; voteBadge.textContent='Fermé'; }
+
+  const resultsCard = document.getElementById('resultsCard');
+  const resultsBadge = document.getElementById('resultsBadge');
+  if(currentPhase === 'results') {
+    resultsCard.classList.remove('disabled');
+    resultsBadge.className='badge-open'; resultsBadge.textContent='Disponibles';
+  } else { resultsCard.classList.add('disabled'); resultsBadge.className='badge-closed'; resultsBadge.textContent='Non disponibles'; }
+}
+
+// ── Join game ─────────────────────────────────────────────
+window.joinGame = async function() {
+  const n = document.getElementById('nameInput').value.trim();
+  if(!n){ document.getElementById('nameError').textContent='Entre ton prénom'; return; }
+  myName = n;
+  document.getElementById('displayName').textContent = myName;
+  hasVoted = false; myRoleDrawn = false;
+  saveSession();
+  showScreen('screenMain');
+  await setupPresence(myName);
+}
+document.getElementById('nameInput').addEventListener('keydown', e=>{ if(e.key==='Enter') joinGame(); });
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// ── Code secret ───────────────────────────────────────────
+window.openCodeModal = function(){ document.getElementById('codeSecretInput').value=''; document.getElementById('codeSecretError').textContent=''; openOverlay('overlayCode'); setTimeout(()=>document.getElementById('codeSecretInput').focus(),200); }
+document.getElementById('codeSecretInput').addEventListener('keydown', e=>{ if(e.key==='Enter') revealMission(); });
+
+window.revealMission = function(){
+  const entered = document.getElementById('codeSecretInput').value.trim().toUpperCase();
+  if(!entered){ document.getElementById('codeSecretError').textContent='Entre ton code'; return; }
+  const match = secretCodes[entered];
+  if(!match){ document.getElementById('codeSecretError').textContent='Code incorrect'; document.getElementById('codeSecretInput').value=''; return; }
+  closeOverlay('overlayCode');
+  const isT=match.type==='tricheur'; const isR=match.type==='reglo';
+  const color=isT?'var(--accent)':isR?'#22c55e':'var(--accent2)';
+  const border=isT?'var(--accent)':isR?'#22c55e':'var(--accent2)';
+  const glow=isT?'rgba(255,59,92,0.25)':isR?'rgba(34,197,94,0.2)':'rgba(255,204,0,0.2)';
+  const box=document.getElementById('missionBox');
+  box.style.borderColor=border; box.style.boxShadow=`0 0 60px ${glow}`;
+  document.getElementById('missionRole').style.color=color;
+  document.getElementById('missionRole').textContent=match.role;
+  document.getElementById('missionText').style.color=color;
+  document.getElementById('missionText').innerHTML=(match.text||'').replace(/\n/g,'<br>');
+  openOverlay('overlayMission');
+}
+
+// ── Role draw ─────────────────────────────────────────────
+window.openRolePanel = async function(){
+  if (currentPhase !== 'roles' && !myRoleDrawn) return;
+
+  const content = document.getElementById('roleDrawContent');
+  const box = document.getElementById('roleDrawBox');
+
+  // Toujours vérifier dans Firebase en priorité
+  const playerSnap = await get(fbRef(`game/players/${myName}`));
+  const playerData = playerSnap.exists() ? playerSnap.val() : null;
+
+  if (playerData && playerData.role) {
+    // Rôle déjà tiré → on l’affiche directement
+    myRoleDrawn = true;
+    saveSession();
+    updateCards();
+
+    const r = playerData;
+    const color = r.roleType==='tricheur' ? 'var(--accent)' : r.roleType==='reglo' ? '#22c55e' : 'var(--accent2)';
+    const border = r.roleType==='tricheur' ? 'var(--accent)' : r.roleType==='reglo' ? '#22c55e' : 'var(--accent2)';
+    const glow = r.roleType==='tricheur' ? 'rgba(255,59,92,0.2)' : r.roleType==='reglo' ? 'rgba(34,197,94,0.15)' : 'rgba(255,204,0,0.15)';
+
+    box.style.borderColor = border;
+    box.style.boxShadow = `0 0 50px ${glow}`;
+
+    content.innerHTML = `
+      <div style="font-size:12px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:12px;">Ton rôle</div>
+      <div class="my-role-name" style="color:${color}">${r.role}</div>
+      <div class="my-role-text">${(r.roleText||'').replace(/\n/g,'<br>')}</div>
+      <button class="btn-close-role" onclick="closeOverlay('overlayRole')">✕ Fermer</button>`;
+    openOverlay('overlayRole');
+    return;
+  }
+
+  // Pas de rôle dans Firebase → on propose de tirer (si phase ouverte)
+  box.style.borderColor = 'var(--border)';
+  box.style.boxShadow = 'none';
+  content.innerHTML = `
+    <div style="font-size:12px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:32px;">Distribution des rôles</div>
+    <button class="btn-draw-role" onclick="drawMyRole()">🎲 Tirer mon rôle</button>
+    <button class="btn-close-role" onclick="closeOverlay('overlayRole')">Annuler</button>`;
+  openOverlay('overlayRole');
+};}
+
+window.drawMyRole = async function() {
+  if(myRoleDrawn){ showToast("Tu as déjà tiré ton rôle !"); return; }
+  if(rolesPool.length === 0){ showToast("⚠️ Configuration non chargée"); return; }
+
+  const roleCounts = {};
+  rolesPool.forEach(r=>{ roleCounts[r.name]=(roleCounts[r.name]||0)+1; });
+  Object.values(registeredPlayers).forEach(p=>{ if(p.role && roleCounts[p.role]!==undefined) roleCounts[p.role]--; });
+  const available = rolesPool.filter(r=>(roleCounts[r.name]||0)>0);
+  if(available.length===0){ showToast("Plus de rôles disponibles !"); closeOverlay('overlayRole'); return; }
+  const r = available[Math.floor(Math.random()*available.length)];
+
+  const content = document.getElementById('roleDrawContent');
+  const box = document.getElementById('roleDrawBox');
+  const rouletteNames = [...new Set(rolesPool.map(x=>x.name))];
+  let i=0;
+  content.innerHTML=`<div style="font-size:12px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:12px;">Tirage en cours…</div><div class="spinning-role pulsing">...</div>`;
+  const interval=setInterval(()=>{ content.querySelector('.spinning-role').textContent=rouletteNames[i%rouletteNames.length]; i++; },60);
+  await new Promise(res=>setTimeout(res,2000));
+  clearInterval(interval);
+
+  const color=r.type==='tricheur'?'var(--accent)':r.type==='reglo'?'#22c55e':'var(--accent2)';
+  const border=r.type==='tricheur'?'var(--accent)':r.type==='reglo'?'#22c55e':'var(--accent2)';
+  const glow=r.type==='tricheur'?'rgba(255,59,92,0.2)':r.type==='reglo'?'rgba(34,197,94,0.15)':'rgba(255,204,0,0.15)';
+  box.style.borderColor=border; box.style.boxShadow=`0 0 50px ${glow}`;
+  content.innerHTML=`
+    <div style="font-size:12px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:12px;">Ton rôle</div>
+    <div class="my-role-name" style="color:${color}">${r.name}</div>
+    <div class="my-role-text">${(r.text||'').replace(/\n/g,'<br>')}</div>
+    <button class="btn-close-role" onclick="closeOverlay('overlayRole')">✕ Fermer</button>`;
+
+  const existing = registeredPlayers[myName] || {};
+  await set(fbRef(`game/players/${myName}`), { ...existing, role:r.name, roleType:r.type, roleText:r.text||'', online:true, name:myName });
+  myRoleDrawn = true;
+  saveSession();
+  updateCards();
+}
+
+// ── Vote ──────────────────────────────────────────────────
+window.openVotePanel = function(){
+  if(currentPhase !== 'votes') return;
+  selectedVote = null;
+  renderVoteContent();
+  openOverlay('overlayVote');
+}
+function renderVoteContent(){
+  const c = document.getElementById('voteContent');
+  if(hasVoted){ c.innerHTML=`<div class="voted-already"><div class="icon">✅</div><h4>Tu as voté !</h4><p>Ton vote a bien été enregistré.</p></div>`; return; }
+  const players = Object.keys(registeredPlayers).filter(p=>p!==myName);
+  if(players.length===0){ c.innerHTML='<p style="color:var(--muted);text-align:center;padding:24px;">Aucun autre joueur.</p>'; return; }
+  let html='<div class="vote-names-grid">';
+  players.forEach(p=>{ html+=`<button class="vote-name-btn${selectedVote===p?' selected':''}" onclick="selectVote('${p}')">${p}</button>`; });
+  html+=`</div><button class="btn-confirm-vote" id="btnConfirmVote" onclick="confirmVote()" ${selectedVote?'':'disabled'}>✓ Confirmer</button>`;
+  c.innerHTML=html;
+}
+window.selectVote = function(name){ selectedVote=name; renderVoteContent(); }
+window.confirmVote = async function(){
+  if(!selectedVote||hasVoted) return;
+  await runTransaction(fbRef(`game/votes/${selectedVote}`), cur=>(cur||0)+1);
+  hasVoted=true; saveSession(); updateCards();
+  closeOverlay('overlayVote');
+  document.getElementById('voteConfirmedText').textContent=`Tu as voté pour ${selectedVote}.`;
+  openOverlay('overlayVoteConfirmed');
+}
+
+// ── Results ───────────────────────────────────────────────
+window.openResultsPanel = function(){
+  if(currentPhase !== 'results') return;
+  renderResults(); openOverlay('overlayResults');
+}
+function renderResults(){
+  const c = document.getElementById('resultsContent'); if(!c) return;
+  const allPlayers = Object.keys(registeredPlayers);
+  const sorted = allPlayers.map(p=>({name:p,count:votes[p]||0})).sort((a,b)=>b.count-a.count);
+  if(sorted.length===0){ c.innerHTML='<p style="color:var(--muted);text-align:center;padding:24px;">Aucun vote.</p>'; return; }
+  const maxV=sorted[0].count||1;
+  c.innerHTML=sorted.map((item,i)=>{
+    const pct=Math.round((item.count/maxV)*100); const isTop=i===0&&item.count>0;
+    return `<div class="result-row" style="border-color:${isTop?'#a78bfa':'var(--border)'}${isTop?';box-shadow:0 0 16px rgba(167,139,250,0.15)':''}">
+      <span class="result-name">${isTop?'👑 ':''}${item.name}</span>
+      <div class="result-bar-wrap"><div class="result-bar" style="width:${pct}%"></div></div>
+      <span class="result-votes">${item.count}</span>
+    </div>`;
+  }).join('');
+}
+
+window.openOverlay = function(id){ document.getElementById(id).classList.add('open'); }
+window.closeOverlay = function(id){ document.getElementById(id).classList.remove('open'); }
+function showToast(msg){ const t=document.createElement('div'); t.style.cssText=`position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#222;border:1px solid var(--border);color:var(--text);padding:12px 20px;border-radius:10px;font-size:14px;z-index:999;font-family:'DM Sans',sans-serif;white-space:nowrap`; t.textContent=msg; document.body.appendChild(t); setTimeout(()=>t.remove(),2500); }
+</script>
+</body>
+</html>

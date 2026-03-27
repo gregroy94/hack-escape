@@ -1,0 +1,29 @@
+0 verbose cli /usr/local/nvm/versions/node/v24.14.0/bin/node /usr/local/nvm/versions/node/v24.14.0/bin/npm
+1 info using npm@11.11.1
+2 info using node@v24.14.0
+3 silly config load:file:/usr/local/nvm/versions/node/v24.14.0/lib/node_modules/npm/npmrc
+4 silly config load:file:/home/gregory_roy/.npmrc
+5 silly config load:file:/usr/local/nvm/versions/node/v24.14.0/etc/npmrc
+6 verbose title npm create vite@latest cyber-escape --template react-ts
+7 verbose argv "create" "vite@latest" "cyber-escape" "--" "--template" "react-ts"
+8 verbose logfile logs-max:10 dir:/home/gregory_roy/.npm/_logs/2026-03-27T14_40_26_430Z-
+9 verbose logfile /home/gregory_roy/.npm/_logs/2026-03-27T14_40_26_430Z-debug-0.log
+10 silly logfile start cleaning logs, removing 18 files
+11 silly packumentCache heap:2348810240 maxSize:587202560 maxEntrySize:293601280
+12 silly logfile done cleaning log files
+13 http fetch GET 200 https://registry.npmjs.org/npm 131ms
+14 http fetch GET 200 https://registry.npmjs.org/create-vite 149ms (cache miss)
+15 silly packumentCache heap:2348810240 maxSize:587202560 maxEntrySize:293601280
+16 silly idealTree buildDeps
+17 silly fetch manifest create-vite@9.0.3
+18 silly packumentCache full:https://registry.npmjs.org/create-vite cache-miss
+19 http fetch GET 200 https://registry.npmjs.org/create-vite 58ms (cache miss)
+20 silly packumentCache full:https://registry.npmjs.org/create-vite set size:undefined disposed:false
+21 silly placeDep ROOT create-vite@9.0.3 OK for:  want: 9.0.3
+22 silly reify moves {}
+23 silly audit bulk request { 'create-vite': [ '9.0.3' ] }
+24 http cache create-vite@https://registry.npmjs.org/create-vite/-/create-vite-9.0.3.tgz 0ms (cache hit)
+25 silly tarball no local data for create-vite@https://registry.npmjs.org/create-vite/-/create-vite-9.0.3.tgz. Extracting by manifest.
+26 http fetch POST 200 https://registry.npmjs.org/-/npm/v1/security/advisories/bulk 174ms
+27 silly audit report {}
+28 http fetch GET 200 https://registry.npmjs.org/create-vite/-/create-vite-9.0.3.tgz 197ms (cache miss)

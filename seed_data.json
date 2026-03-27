@@ -1,0 +1,82 @@
+{
+  "config": {
+    "accessCode": "HACK2024",
+    "accessCodeMessage": "Entrez le code fourni par votre animateur pour démarrer la mission.",
+    "adminPassword": "admin1234",
+    "gameActive": true
+  },
+  "enigmas": {
+    "e1": {
+      "title": "Firewall Alpha",
+      "description": "Le premier pare-feu bloque votre accès. Analysez les logs :\n\n[LOG] 192.168.1.1 → REJECTED\n[LOG] 10.0.0.42 → ACCEPTED\n[LOG] PROTOCOL: SSH\n[LOG] PORT: 22\n\nQuel protocole est accepté ? (3 lettres)",
+      "answer": "ssh",
+      "hint": "Regardez la ligne PROTOCOL dans les logs."
+    },
+    "e2": {
+      "title": "Cryptage Caesar",
+      "description": "Message intercepté (chiffrement César +3) :\n\n« KDOO »\n\nChaque lettre a été décalée de +3 dans l'alphabet.\nDéchiffrez ce mot. (K-3=H, D-3=A, O-3=L...)\n\nQuel est le mot original ?",
+      "answer": "hall",
+      "hint": "Décalez chaque lettre de 3 positions en arrière dans l'alphabet."
+    },
+    "e3": {
+      "title": "Décodage Binaire",
+      "description": "Décodez ce nombre binaire en décimal :\n\n01001000\n\nRappel : 128-64-32-16-8-4-2-1\n\nQuelle est la valeur décimale ?",
+      "answer": "72",
+      "hint": "Positions actives (1) : 64 + 8 = ?"
+    },
+    "e4": {
+      "title": "Intrusion Détectée",
+      "description": "Le système a enregistré ces tentatives de connexion :\n\n[FAIL]  root / password123\n[FAIL]  admin / admin\n[OK]    system / xxxxxxxx\n[FAIL]  guest / guest\n\nCombien de tentatives ont ECHOUE ?",
+      "answer": "3",
+      "hint": "Comptez les lignes avec [FAIL]."
+    },
+    "e5": {
+      "title": "Port Scanner",
+      "description": "Scan du réseau cible terminé :\n\nPORT 21   FTP    [OPEN]\nPORT 22   SSH    [CLOSED]\nPORT 80   HTTP   [OPEN]\nPORT 443  HTTPS  [OPEN]\nPORT 3306 MYSQL  [OPEN]\nPORT 8080 HTTP   [CLOSED]\n\nCombien de ports sont OUVERTS ?",
+      "answer": "4",
+      "hint": "Comptez uniquement les lignes avec [OPEN]."
+    },
+    "e6": {
+      "title": "Vecteur d'Attaque",
+      "description": "PHASE 1 COMPLETE — Vecteur d'attaque déverrouillé.\n\nLa clé est cachée dans cette suite logique :\n\n2, 4, 8, 16, ?\n\nQuel est le prochain nombre ?",
+      "answer": "32",
+      "hint": "Chaque nombre est multiplié par 2."
+    },
+    "e7": {
+      "title": "Backdoor Alpha",
+      "description": "Pour installer la backdoor Alpha, trouvez la clé :\n\nCe mot de 6 lettres signifie 'chercher' en anglais.\nSes lettres sont : A, C, E, H, R, S\n\nQuel est ce mot ?",
+      "answer": "search",
+      "hint": "S-E-A-R-C-H : chercher, fouiller..."
+    },
+    "e8": {
+      "title": "Backdoor Beta",
+      "description": "Décodez le message hexadécimal :\n\n0x52  0x4F  0x4F  0x54\n\nConvertissez chaque valeur hex en lettre ASCII :\n0x52 = 82 = R\n0x4F = 79 = ?\n0x4F = 79 = ?\n0x54 = 84 = ?\n\nQuel mot obtenez-vous ?",
+      "answer": "root",
+      "hint": "R-O-O-T : c'est l'utilisateur avec tous les droits sous Linux."
+    },
+    "e9": {
+      "title": "Backdoor Gamma",
+      "description": "Sur un système Linux, le fichier qui contient la liste de tous les utilisateurs du système se trouve dans /etc/\n\nCompletez le chemin : /etc/________\n\nQuel est le nom de ce fichier ?",
+      "answer": "passwd",
+      "hint": "Ce fichier commence par 'pass' et est lié aux mots de passe."
+    },
+    "e10": {
+      "title": "Clé de Chiffrement",
+      "description": "BACKDOORS INSTALLEES — Phase 4 déverrouillée.\n\nLa clé de déchiffrement finale est cachée ici :\n\nJe suis un langage de programmation créé en 1991.\nMon nom est celui d'un grand serpent.\n\nQuel est mon nom ?",
+      "answer": "python",
+      "hint": "C'est un serpent... et l'un des langages les plus populaires du monde."
+    },
+    "e11": {
+      "title": "Accès Root — Étape 1",
+      "description": "PHASE FINALE — Séquence d'accès initiée.\n\nUne attaque qui consiste à essayer tous les mots de passe possibles s'appelle une attaque par force ______.\n\nCompletez le mot manquant.",
+      "answer": "brute",
+      "hint": "Force... quelque chose de brut, de violent."
+    },
+    "e12": {
+      "title": "ACCES SYSTEME CENTRAL",
+      "description": "DERNIERE LIGNE DE DEFENSE\n\nVous êtes devant le coeur du système central.\n\nEntrez le mot de passe maître pour obtenir l'accès root.\n\nCe que vous avez fait tout au long de ce jeu, en un seul mot (en anglais, 4 lettres).",
+      "answer": "hack",
+      "hint": "Vous l'avez fait depuis le début de la mission..."
+    }
+  }
+}
