@@ -1,0 +1,13 @@
+{
+  "rules": {
+    "players": {
+      "$pseudo": {
+        ".read": true,
+        ".write": true
+      }
+    },
+    "enigmas": {".read": true, ".write": true},
+    "settings": {".read": true, ".write": true},
+    "admin": {".read": true, ".write": true}
+  }
+}

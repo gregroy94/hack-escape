@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>HACK//ESCAPE — Mission</title>
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#0a0f0a" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+  <link rel="stylesheet" href="/css/terminal.css" />
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+</head>
+<body>
+  <div class="scanlines"></div>
+  <div class="noise"></div>
+
+  <div class="terminal-container" id="appContainer">
+
+    <!-- ÉCRAN: Code d'accès -->
+    <div id="accessCodeScreen" class="hidden">
+      <div class="page-header">
+        <div class="page-title">HACK//ESCAPE</div>
+        <button class="logout-btn" onclick="logout()">[ QUIT ]</button>
+      </div>
+      <div class="access-code-screen">
+        <div class="glitch-text" data-text="ACCÈS REQUIS" style="font-size:22px">ACCÈS REQUIS</div>
+        <div class="access-title" id="accessCodeWelcome"></div>
+        <div class="access-sub" id="accessCodeMsg">Entrez le code d'accès fourni par votre animateur pour démarrer la mission.</div>
+        <input type="text" class="code-input terminal-input" id="codeInput" placeholder="??????" maxlength="20" style="text-align:center;font-size:20px;letter-spacing:4px" />
+        <button class="btn-terminal" onclick="submitAccessCode()">[ VALIDER LE CODE ]</button>
+        <div id="codeError" class="error-msg hidden"></div>
+      </div>
+    </div>
+
+    <!-- ÉCRAN: Jeu principal -->
+    <div id="gameScreen" class="hidden">
+      <div class="page-header">
+        <div class="page-title">HACK//ESCAPE</div>
+        <button class="logout-btn" onclick="logout()">[ QUIT ]</button>
+      </div>
+
+      <!-- Chrono -->
+      <div class="chrono-display">
+        <div>
+          <div class="chrono-label">⏱ TEMPS EN COURS</div>
+          <div class="chrono-time" id="chronoDisplay">00:00:00</div>
+        </div>
+        <div style="text-align:right">
+          <div class="chrono-label">AGENT</div>
+          <div style="font-size:14px;color:var(--green);letter-spacing:2px" id="playerNameDisplay"></div>
+          <div class="penalties-info" id="penaltiesDisplay"></div>
+        </div>
+      </div>
+
+      <div class="status-bar" id="statusBar">$ Connexion au réseau cible...</div>
+
+      <!-- Zone des énigmes dynamique -->
+      <div id="enigmasContainer"></div>
+    </div>
+
+    <!-- ÉCRAN: Victoire -->
+    <div id="victoryScreen" class="hidden">
+      <div class="victory-screen">
+        <div class="glitch-text">MISSION ACCOMPLIE</div>
+        <div style="margin:20px 0;color:var(--text-dim);font-size:13px;line-height:2">
+          Accès au système central obtenu.<br>
+          Vous avez pénétré les défenses.<br>
+          <br>
+          <span style="color:var(--cyan)">AGENT: <span id="victoryPseudo"></span></span>
+        </div>
+        <div class="chrono-label">TEMPS FINAL</div>
+        <div class="final-time" id="victoryTime"></div>
+        <div id="victoryRank" style="color:var(--amber);font-size:14px;margin-bottom:20px"></div>
+        <div class="victory-title">CLASSEMENT</div>
+        <div id="leaderboardDisplay" style="margin-top:16px"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- MODAL Énigme -->
+  <div class="modal-overlay hidden" id="enigmaModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <div class="modal-title" id="modalTitle">ÉNIGME</div>
+        <button class="modal-close" onclick="closeModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="enigma-desc" id="modalDesc"></div>
+        <div class="hint-section" id="hintSection">
+          <button class="hint-btn" id="hintBtn" onclick="requestHint()">⚠ DEMANDER UN INDICE (+3 min)</button>
+          <div class="hint-text hidden" id="hintText"></div>
+        </div>
+        <div class="answer-section">
+          <input type="text" class="answer-input" id="answerInput" placeholder="Votre réponse..." />
+          <button class="submit-btn" onclick="submitAnswer()">OK</button>
+        </div>
+        <div id="answerFeedback" class="hidden"></div>
+        <div style="text-align:right;margin-top:8px">
+          <button class="btn-terminal btn-secondary" style="width:auto;padding:6px 14px;font-size:10px" onclick="closeModal()">[ FERMER ]</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script src="/js/firebase-config.js"></script>
+  <script src="/js/game.js"></script>
+</body>
+</html>

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192">
+  <rect width="192" height="192" fill="#060b06"/>
+  <rect x="8" y="8" width="176" height="176" fill="none" stroke="#00ff41" stroke-width="2"/>
+  <text x="96" y="80" font-family="monospace" font-size="42" font-weight="bold" fill="#00ff41" text-anchor="middle">HE</text>
+  <text x="96" y="115" font-family="monospace" font-size="13" fill="#00cc33" text-anchor="middle">HACK//ESCAPE</text>
+  <rect x="30" y="128" width="132" height="2" fill="#00ff41" opacity="0.4"/>
+  <text x="96" y="152" font-family="monospace" font-size="10" fill="#5a8a5a" text-anchor="middle">v2.4.1</text>
+</svg>

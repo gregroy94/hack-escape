@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HACK//ESCAPE — Administration</title>
+  <link rel="stylesheet" href="/css/terminal.css" />
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+</head>
+<body>
+  <div class="scanlines"></div>
+
+  <!-- LOGIN ADMIN -->
+  <div id="adminLoginScreen" class="terminal-container" style="max-width:400px">
+    <div class="boot-header">
+      <div class="glitch-text" style="font-size:28px">ADMIN_PANEL</div>
+      <div class="subtitle">— ACCÈS RESTREINT —</div>
+    </div>
+    <div class="terminal-box">
+      <div class="terminal-title">
+        <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+        <span class="title-text">AUTH_ADMIN</span>
+      </div>
+      <div class="terminal-body">
+        <div class="form-group">
+          <label class="field-label">// MOT DE PASSE ADMIN</label>
+          <input type="password" id="adminPwdInput" class="terminal-input" placeholder="Mot de passe admin" />
+        </div>
+        <div class="btn-group">
+          <button class="btn-terminal" onclick="adminLogin()">[ ACCÉDER ]</button>
+        </div>
+        <div id="adminLoginError" class="error-msg hidden"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADMIN PANEL PRINCIPAL -->
+  <div id="adminPanel" class="hidden">
+    <div class="admin-container">
+      <div class="admin-header">
+        <div class="admin-title">⚡ HACK//ESCAPE — ADMIN</div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <span id="liveIndicator" style="font-size:11px;color:var(--green)">● LIVE</span>
+          <button class="logout-btn" onclick="adminLogout()">[ DÉCO ]</button>
+        </div>
+      </div>
+
+      <div class="admin-tabs">
+        <button class="tab-btn active" onclick="switchTab('players')">👥 JOUEURS</button>
+        <button class="tab-btn" onclick="switchTab('enigmas')">🧩 ÉNIGMES</button>
+        <button class="tab-btn" onclick="switchTab('leaderboard')">🏆 CLASSEMENT</button>
+        <button class="tab-btn" onclick="switchTab('settings')">⚙ PARAMÈTRES</button>
+      </div>
+
+      <!-- TAB: JOUEURS -->
+      <div id="tab-players" class="admin-section active">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+          <div style="font-size:12px;color:var(--text-dim)" id="playerCountInfo"></div>
+          <button class="btn-terminal btn-danger" style="width:auto;padding:6px 14px;font-size:11px" onclick="resetAllPlayers()">[ ⚠ RÉINITIALISER TOUT ]</button>
+        </div>
+        <div style="overflow-x:auto">
+          <table class="player-table">
+            <thead>
+              <tr>
+                <th>AGENT</th>
+                <th>STATUT</th>
+                <th>PHASE</th>
+                <th>MODULES</th>
+                <th>CHRONO</th>
+                <th>PÉNALITÉS</th>
+                <th>ACTION</th>
+              </tr>
+            </thead>
+            <tbody id="playerTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- TAB: ÉNIGMES -->
+      <div id="tab-enigmas" class="admin-section">
+        <div class="enigma-editor">
+          <div class="enigma-list-admin" id="enigmaListAdmin"></div>
+          <div class="edit-panel" id="editPanel">
+            <div style="color:var(--text-dim);font-size:13px;text-align:center;padding:40px 0">
+              Sélectionnez une énigme à éditer.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB: CLASSEMENT -->
+      <div id="tab-leaderboard" class="admin-section">
+        <div id="leaderboardAdmin"></div>
+      </div>
+
+      <!-- TAB: PARAMÈTRES -->
+      <div id="tab-settings" class="admin-section">
+        <div class="settings-form">
+          <div class="settings-group">
+            <div class="settings-group-title">// CODE D'ACCÈS AU JEU</div>
+            <div class="edit-field">
+              <label class="edit-label">Code d'accès (que les joueurs doivent entrer pour démarrer)</label>
+              <input type="text" class="edit-input" id="accessCodeInput" placeholder="Ex: HACK2024" />
+            </div>
+            <div class="edit-field">
+              <label class="edit-label">Message affiché sur l'écran de code</label>
+              <input type="text" class="edit-input" id="accessMsgInput" placeholder="Entrez le code fourni par votre animateur." />
+            </div>
+          </div>
+          <div class="settings-group">
+            <div class="settings-group-title">// SÉCURITÉ ADMIN</div>
+            <div class="edit-field">
+              <label class="edit-label">Changer le mot de passe admin</label>
+              <input type="password" class="edit-input" id="newAdminPwd" placeholder="Nouveau mot de passe" />
+            </div>
+          </div>
+          <button class="btn-terminal" onclick="saveSettings()" style="width:auto;padding:10px 24px">[ SAUVEGARDER ]</button>
+          <div id="settingsSaved" class="success-msg hidden" style="margin-top:10px">✓ Paramètres sauvegardés.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script src="/js/firebase-config.js"></script>
+  <script src="/js/admin.js"></script>
+</body>
+</html>

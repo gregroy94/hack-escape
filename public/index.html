@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>HACK//ESCAPE — Connexion</title>
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#0a0f0a" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+  <link rel="stylesheet" href="/css/terminal.css" />
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+</head>
+<body>
+  <div class="scanlines"></div>
+  <div class="noise"></div>
+
+  <div class="terminal-container">
+    <div class="boot-header">
+      <div class="glitch-text" data-text="HACK//ESCAPE">HACK//ESCAPE</div>
+      <div class="subtitle">— SYSTÈME DE JEU SÉCURISÉ v2.4.1 —</div>
+      <div class="blink-bar"></div>
+    </div>
+
+    <!-- PANNEAU CONNEXION -->
+    <div class="terminal-box" id="loginPanel">
+      <div class="terminal-title">
+        <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+        <span class="title-text">AUTH_TERMINAL</span>
+      </div>
+      <div class="terminal-body">
+        <div class="log-line"><span class="prompt">$</span> Initialisation du protocole d'authentification...</div>
+        <div class="log-line success"><span class="prompt">></span> Connexion au serveur sécurisé [OK]</div>
+        <div class="log-line warning"><span class="prompt">!</span> Identifiez-vous pour accéder au système.</div>
+
+        <div class="form-group">
+          <label class="field-label">// IDENTIFIANT AGENT</label>
+          <input type="text" id="pseudoInput" class="terminal-input"
+                 placeholder="pseudo_agent" autocomplete="username" maxlength="20" />
+        </div>
+        <div class="form-group">
+          <label class="field-label">// MOT DE PASSE</label>
+          <input type="password" id="passwordInput" class="terminal-input"
+                 placeholder="••••••••" autocomplete="current-password" />
+        </div>
+
+        <div class="btn-group">
+          <button class="btn-terminal" onclick="loginPlayer()">[ CONNEXION ]</button>
+          <button class="btn-terminal btn-secondary" onclick="showRegister()">[ CRÉER UN COMPTE ]</button>
+        </div>
+
+        <div id="loginError" class="error-msg hidden"></div>
+      </div>
+    </div>
+
+    <!-- PANNEAU INSCRIPTION -->
+    <div class="terminal-box hidden" id="registerPanel">
+      <div class="terminal-title">
+        <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+        <span class="title-text">CRÉATION_AGENT</span>
+      </div>
+      <div class="terminal-body">
+        <div class="log-line warning"><span class="prompt">!</span> Création d'un nouvel agent. Choisissez vos identifiants.</div>
+
+        <div class="form-group">
+          <label class="field-label">// NOM DE CODE (unique, lettres/chiffres/_)</label>
+          <input type="text" id="regPseudo" class="terminal-input"
+                 placeholder="votre_pseudo" maxlength="20" autocomplete="username" />
+        </div>
+        <div class="form-group">
+          <label class="field-label">// MOT DE PASSE (min. 4 caractères)</label>
+          <input type="password" id="regPassword" class="terminal-input"
+                 placeholder="min. 4 caractères" autocomplete="new-password" />
+        </div>
+        <div class="form-group">
+          <label class="field-label">// CONFIRMER MOT DE PASSE</label>
+          <input type="password" id="regPasswordConfirm" class="terminal-input"
+                 placeholder="••••••••" autocomplete="new-password" />
+        </div>
+
+        <div class="btn-group">
+          <button class="btn-terminal" onclick="registerPlayer()">[ CRÉER MON COMPTE ]</button>
+          <button class="btn-terminal btn-secondary" onclick="showLogin()">[ RETOUR ]</button>
+        </div>
+
+        <div id="registerError" class="error-msg hidden"></div>
+      </div>
+    </div>
+
+    <div class="footer-info">
+      <span class="blink-cursor">█</span> SYSTÈME OPÉRATIONNEL — TOUS LES ACCÈS SONT TRACÉS
+    </div>
+  </div>
+
+  <script src="/js/firebase-config.js"></script>
+  <script src="/js/auth.js"></script>
+</body>
+</html>
